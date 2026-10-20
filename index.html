@@ -1,0 +1,2342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Dussehra Ravan Dahan 3D — Realistic Vedic Archery</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="./three.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #040108;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      touch-action: none;
+    }
+    .font-cinzel {
+      font-family: 'Cinzel', Georgia, serif;
+    }
+    #webglCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      z-index: 1;
+    }
+    #webglCanvas:active {
+      cursor: grabbing;
+    }
+    .gold-glass {
+      background: linear-gradient(135deg, rgba(24, 11, 36, 0.88) 0%, rgba(12, 5, 20, 0.94) 100%);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(245, 158, 11, 0.42);
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(254, 240, 138, 0.2);
+    }
+    .gold-text {
+      background: linear-gradient(135deg, #fef08a 0%, #f59e0b 50%, #ea580c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .btn-gold {
+      background: linear-gradient(135deg, #f59e0b 0%, #ea580c 50%, #b91c1c 100%);
+      color: #080202;
+      font-weight: 700;
+      box-shadow: 0 4px 18px rgba(234, 88, 12, 0.5);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-gold:hover {
+      filter: brightness(1.15);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(234, 88, 12, 0.7);
+    }
+    .btn-gold:active {
+      transform: translateY(0);
+      filter: brightness(0.95);
+    }
+    #celebrationScreen {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 50;
+      background: #000;
+      overflow: hidden;
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes cinematicFadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(22px) scale(0.97);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    .cinematic-entry {
+      animation: cinematicFadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .cinematic-white-title {
+      color: #ffffff;
+      text-shadow: 
+        0 2px 0 #000000,
+        0 4px 14px rgba(0, 0, 0, 0.95),
+        0 10px 30px rgba(0, 0, 0, 0.95),
+        0 20px 60px rgba(0, 0, 0, 0.9),
+        0 0 50px rgba(0, 0, 0, 0.85);
+      letter-spacing: 0.06em;
+    }
+    .cinematic-tagline {
+      color: #ffffff;
+      font-size: clamp(1.15rem, 2.5vw, 1.85rem);
+      line-height: 1.45;
+      font-weight: 600;
+      text-shadow: 
+        0 2px 0 #000000,
+        0 3px 12px rgba(0, 0, 0, 0.95),
+        0 8px 24px rgba(0, 0, 0, 0.9),
+        0 0 35px rgba(0, 0, 0, 0.85);
+      letter-spacing: 0.02em;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+    .cinematic-backdrop {
+      background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0.35) 60%, transparent 80%);
+      padding: 32px 28px;
+      border-radius: 32px;
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+    }
+  </style>
+</head>
+<body class="relative w-full h-full overflow-hidden select-none bg-black">
+
+  <!-- Three.js 3D Viewport -->
+  <canvas id="webglCanvas"></canvas>
+
+  <!-- Top Festive Header HUD (Fully Mobile Responsive) -->
+  <header class="fixed top-0 left-0 right-0 z-20 pointer-events-none px-2.5 pt-2.5 sm:px-6 sm:pt-4 flex items-center justify-between gap-1.5 sm:gap-3">
+    <!-- Brand / Title Pill -->
+    <div class="gold-glass pointer-events-auto rounded-2xl px-3 py-2 sm:px-4 sm:py-2.5 flex items-center gap-2 sm:gap-3">
+      <a href="/" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-amber-400 via-orange-500 to-red-600 flex items-center justify-center shadow-lg shadow-orange-600/35 border border-amber-300/40 hover:brightness-110 active:scale-95 transition flex-shrink-0" title="Back to UI Lab">
+        <!-- SVG Bow & Arrow Icon -->
+        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-slate-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 12c0-4.4 3.6-8 8-8s8 3.6 8 8" />
+          <path d="M4 12c0 4.4 3.6 8 8 8s8-3.6 8-8" />
+          <path d="M4 12h16" />
+          <path d="M16 8l4 4-4 4" />
+        </svg>
+      </a>
+      <div>
+        <h1 class="font-cinzel text-[11px] sm:text-sm font-extrabold tracking-wider sm:tracking-widest gold-text leading-tight whitespace-nowrap">
+          RAVAN DAHAN 3D
+        </h1>
+        <p class="text-[9px] sm:text-xs text-amber-200/80 font-medium hidden sm:block">
+          Authentic 10-Headed Dashanan &bull; Bottom-Center Kodanda Bow &bull; Agneyastra
+        </p>
+      </div>
+    </div>
+
+    <!-- Mobile Mini Stats Badge (Only on phones) -->
+    <div class="gold-glass rounded-xl px-2.5 py-1.5 flex items-center gap-2 text-[10px] md:hidden pointer-events-auto">
+      <div>
+        <span class="text-amber-300/70 font-semibold text-[8px] uppercase">Hits</span>
+        <span id="mobileHudScore" class="font-bold text-emerald-400 ml-1">0</span>
+      </div>
+      <div class="h-4 w-px bg-amber-500/25"></div>
+      <div>
+        <span class="text-amber-300/70 font-semibold text-[8px] uppercase">Fire</span>
+        <span id="mobileHudFire" class="font-bold text-orange-400 ml-1">0%</span>
+      </div>
+    </div>
+
+    <!-- Controls & Metrics -->
+    <div class="flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+      <!-- Trajectory Metrics (Desktop) -->
+      <div class="gold-glass rounded-2xl px-3.5 py-1.5 hidden md:flex items-center gap-3 text-xs">
+        <div>
+          <span class="text-amber-300/70 uppercase tracking-widest text-[9px] font-semibold block">Tension</span>
+          <span id="hudPower" class="font-bold text-amber-300 text-sm">0%</span>
+        </div>
+        <div class="h-6 w-px bg-amber-500/25"></div>
+        <div>
+          <span class="text-amber-300/70 uppercase tracking-widest text-[9px] font-semibold block">Elevation</span>
+          <span id="hudAngle" class="font-bold text-orange-300 text-sm">18°</span>
+        </div>
+        <div class="h-6 w-px bg-amber-500/25"></div>
+        <div>
+          <span class="text-amber-300/70 uppercase tracking-widest text-[9px] font-semibold block">Arrows Embedded</span>
+          <span id="hudScore" class="font-bold text-emerald-400 text-sm">0</span>
+        </div>
+        <div class="h-6 w-px bg-amber-500/25"></div>
+        <div>
+          <span class="text-amber-300/70 uppercase tracking-widest text-[9px] font-semibold block">Effigy Fire</span>
+          <span id="hudFire" class="font-bold text-orange-400 text-sm">0%</span>
+        </div>
+      </div>
+
+      <!-- Aim Mode Toggle -->
+      <button id="aimModeToggleBtn" type="button" class="gold-glass hover:bg-amber-500/20 active:scale-95 transition rounded-xl px-2.5 py-2 text-xs font-semibold text-amber-200 flex items-center gap-1.5" title="Switch Aiming Mode">
+        <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="22" y1="12" x2="18" y2="12"/>
+          <line x1="6" y1="12" x2="2" y2="12"/>
+          <line x1="12" y1="6" x2="12" y2="2"/>
+          <line x1="12" y1="22" x2="12" y2="18"/>
+        </svg>
+        <span id="aimModeLabel" class="hidden sm:inline">Aim: Slingshot</span>
+      </button>
+
+      <!-- Ravan Movement Speed -->
+      <button id="speedToggleBtn" type="button" class="gold-glass hover:bg-amber-500/20 active:scale-95 transition rounded-xl px-2.5 py-2 text-xs font-semibold text-amber-200 flex items-center gap-1.5" title="Change Ravan Speed">
+        <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2v4"/>
+          <path d="m4.93 4.93 2.83 2.83"/>
+          <path d="M2 12h4"/>
+          <path d="m4.93 19.07 2.83-2.83"/>
+          <path d="M12 22v-4"/>
+          <path d="m19.07 19.07-2.83-2.83"/>
+          <path d="M22 12h-4"/>
+          <path d="m19.07 4.93-2.83 2.83"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+        <span id="speedLabel" class="hidden sm:inline">Normal</span>
+      </button>
+
+      <!-- Audio Toggle -->
+      <button id="muteToggleBtn" type="button" class="gold-glass hover:bg-amber-500/20 active:scale-95 transition rounded-xl px-2.5 py-2 text-xs font-semibold text-amber-200 flex items-center gap-1.5" title="Toggle Sound">
+        <svg id="audioIcon" class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+        </svg>
+        <span id="muteLabel" class="hidden sm:inline">Audio On</span>
+      </button>
+
+      <!-- Reset / New Effigy Button -->
+      <button id="resetGameBtn" type="button" class="btn-gold rounded-xl px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm flex items-center gap-1.5 flex-shrink-0">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+        </svg>
+        <span class="hidden sm:inline">Erect Effigy</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Bottom Guidance Pill (Responsive Width) -->
+  <div id="aimHintPill" class="fixed bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 z-10 pointer-events-none transition-opacity duration-300 max-w-[92vw]">
+    <div class="gold-glass rounded-full px-3.5 py-1.5 sm:px-5 sm:py-2 text-[11px] sm:text-sm text-amber-100 font-medium flex items-center gap-2 shadow-2xl border border-amber-400/40 text-center">
+      <span class="inline-block w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-amber-400 animate-pulse flex-shrink-0"></span>
+      <span id="statusBannerText" class="truncate sm:whitespace-normal">Drag down anywhere to pull the Kodanda bow &bull; Aim for Ravan's glowing Amrit Kund!</span>
+    </div>
+  </div>
+
+  <!-- Cinematic Fullscreen Video Dussehra Takeover (Appears upon 3 Hits) -->
+  <div id="celebrationScreen" class="fixed inset-0 z-50 w-screen h-screen overflow-hidden bg-black transition-opacity duration-1000 opacity-0 pointer-events-none">
+    <!-- Fullscreen Video Element taking entire screen -->
+    <video
+      id="celebrationVideo"
+      class="absolute inset-0 w-full h-full object-cover"
+      src="./ravana-dahan-celebration.mp4"
+      playsinline
+      loop
+      preload="auto"
+    ></video>
+
+    <!-- Cinematic Vignette Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-black/60 pointer-events-none"></div>
+
+    <!-- Centered Cinematic Title & Festive Wish & Start Again -->
+    <div class="relative z-10 w-full h-full flex flex-col items-center justify-between p-6 sm:p-12 text-center pointer-events-none">
+      
+      <!-- Top Subtitle Kicker -->
+      <div class="pt-4 sm:pt-6 cinematic-entry">
+        <span class="inline-block px-4 py-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 text-[10px] sm:text-xs md:text-sm font-bold tracking-[0.28em] text-white uppercase drop-shadow-lg">
+          VIJAYADASHAMI &bull; TRIUMPH OF LIGHT OVER DARKNESS
+        </span>
+      </div>
+
+      <!-- Center Cinematic Greeting & Bigger Crisp Wish -->
+      <div class="my-auto max-w-4xl px-4 cinematic-entry cinematic-backdrop" style="animation-delay: 0.18s;">
+        <h1 class="font-cinzel text-5xl sm:text-7xl md:text-8xl font-black cinematic-white-title tracking-wider leading-none mb-4 sm:mb-6">
+          HAPPY DUSSEHRA
+        </h1>
+        <p class="cinematic-tagline">
+          May the divine light of righteousness conquer all darkness and illuminate your path with joy, courage, and victory.
+        </p>
+      </div>
+
+      <!-- Bottom Start Again Button -->
+      <div class="pb-6 sm:pb-10 pointer-events-auto cinematic-entry" style="animation-delay: 0.35s;">
+        <button id="startAgainBtn" type="button" class="btn-gold px-8 sm:px-11 py-3 sm:py-3.5 rounded-full text-xs sm:text-sm uppercase tracking-[0.2em] font-extrabold shadow-[0_0_35px_rgba(245,158,11,0.55)] hover:scale-105 active:scale-95 transition-transform duration-200 cursor-pointer">
+          Start Again
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. ADVANCED SYNTHESIZER AUDIO ENGINE (No External Assets Required)
+    // =========================================================================
+    class DussehraAudioEngine {
+      constructor() {
+        this.ctx = null;
+        this.muted = false;
+        this.lastCreak = 0;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) this.ctx = new AudioContext();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      playBowPull(tension) {
+        if (this.muted || !this.ctx) return;
+        const now = performance.now();
+        if (now - this.lastCreak < 80) return;
+        this.lastCreak = now;
+
+        const t = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(80 + tension * 120, t);
+        osc.frequency.exponentialRampToValueAtTime(60 + tension * 70, t + 0.05);
+
+        gain.gain.setValueAtTime(0.05, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.06);
+      }
+
+      playBowRelease(power) {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const t = this.ctx.currentTime;
+        // Wood twang
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(140 + power * 120, t);
+        osc.frequency.exponentialRampToValueAtTime(45, t + 0.35);
+
+        gain.gain.setValueAtTime(0.28, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.38);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.4);
+
+        // Arrow wind whoosh
+        const bufferSize = Math.floor(this.ctx.sampleRate * 0.45);
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(1200, t);
+        filter.frequency.exponentialRampToValueAtTime(320, t + 0.45);
+        filter.Q.value = 2.2;
+
+        const nGain = this.ctx.createGain();
+        nGain.gain.setValueAtTime(0.35, t);
+        nGain.gain.exponentialRampToValueAtTime(0.005, t + 0.45);
+
+        noise.connect(filter);
+        filter.connect(nGain);
+        nGain.connect(this.ctx.destination);
+        noise.start(t);
+      }
+
+      playCrackerPop(intensity = 1.0) {
+        if (this.muted || !this.ctx) return;
+        const t = this.ctx.currentTime;
+        const duration = 0.08 + Math.random() * 0.14;
+        const bufferSize = Math.floor(this.ctx.sampleRate * duration);
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.25));
+        }
+
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(800 + Math.random() * 1800, t);
+        filter.Q.value = 1.1;
+
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(Math.min(0.4, 0.22 * intensity), t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+        noise.start(t);
+      }
+
+      playSkyBomb() {
+        if (this.muted || !this.ctx) return;
+        const t = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(160, t);
+        osc.frequency.exponentialRampToValueAtTime(25, t + 0.55);
+
+        gain.gain.setValueAtTime(0.45, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.62);
+
+        this.playCrackerPop(1.5);
+      }
+
+      playVictoryChime() {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const chords = [261.63, 329.63, 392.00, 523.25, 659.25];
+        chords.forEach((f, idx) => {
+          const t = this.ctx.currentTime + idx * 0.1;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(f, t);
+
+          gain.gain.setValueAtTime(0.15, t);
+          gain.gain.exponentialRampToValueAtTime(0.0005, t + 1.8);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(t);
+          osc.stop(t + 1.85);
+        });
+      }
+    }
+
+    const sound = new DussehraAudioEngine();
+
+    // =========================================================================
+    // 2. THREE.JS SCENE SETUP & PERSPECTIVE CAMERA
+    // =========================================================================
+    const canvas = document.getElementById('webglCanvas');
+    let W = window.innerWidth;
+    let H = window.innerHeight;
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x06020c);
+    scene.fog = new THREE.FogExp2(0x10051d, 0.012);
+
+    let baseFOV = 48;
+    const camera = new THREE.PerspectiveCamera(baseFOV, W / H, 0.1, 1000);
+    // Archer eye position looking towards Ravan at (0, 6, -38)
+    camera.position.set(0, 3.4, 14.5);
+    camera.lookAt(0, 5.8, -38);
+    scene.add(camera);
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas: canvas,
+      antialias: true,
+      powerPreference: 'high-performance'
+    });
+    renderer.setSize(W, H);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    // Atmospheric Lighting
+    const ambientLight = new THREE.AmbientLight(0x351d52, 1.2);
+    scene.add(ambientLight);
+
+    const moonLight = new THREE.DirectionalLight(0xa5c4f5, 1.25);
+    moonLight.position.set(30, 45, 10);
+    moonLight.castShadow = true;
+    moonLight.shadow.mapSize.width = 1024;
+    moonLight.shadow.mapSize.height = 1024;
+    moonLight.shadow.camera.near = 10;
+    moonLight.shadow.camera.far = 120;
+    scene.add(moonLight);
+
+    // Warm Key Light illuminating the Archer's Bow and Arrow at bottom center
+    const archerLight = new THREE.PointLight(0xffecd0, 2.8, 10);
+    archerLight.position.set(0, 2.5, 13.5);
+    scene.add(archerLight);
+
+    // Bright Theatrical Floodlight illuminating Ravan effigy directly
+    const stageSpotLight = new THREE.SpotLight(0xfff5e6, 4.2, 85, Math.PI / 4.2, 0.45, 1.0);
+    stageSpotLight.position.set(0, 14, -8);
+    stageSpotLight.target.position.set(0, 6, -38);
+    scene.add(stageSpotLight);
+    scene.add(stageSpotLight.target);
+
+    // Warm stage torchlights flanking Ravan
+    const leftTorch = new THREE.PointLight(0xff7722, 3.2, 38);
+    leftTorch.position.set(-18, 5, -34);
+    scene.add(leftTorch);
+
+    const rightTorch = new THREE.PointLight(0xff7722, 3.2, 38);
+    rightTorch.position.set(18, 5, -34);
+    scene.add(rightTorch);
+
+    // Arrow Light (Illuminates scene dynamically as it flies)
+    const arrowLight = new THREE.PointLight(0xffaa22, 0, 22);
+    scene.add(arrowLight);
+
+    // Ground Plane with festive terracotta markings
+    const groundGeo = new THREE.PlaneGeometry(160, 220, 32, 32);
+    const groundMat = new THREE.MeshStandardMaterial({
+      color: 0x180b22,
+      roughness: 0.88,
+      metalness: 0.12
+    });
+    const ground = new THREE.Mesh(groundGeo, groundMat);
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = 0;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    // Decorative festival pathway lines
+    const gridHelper = new THREE.GridHelper(140, 28, 0xf59e0b, 0x3b185f);
+    gridHelper.position.y = 0.02;
+    scene.add(gridHelper);
+
+    // Glowing Earthen Diyas along the pathway
+    const diyaGroup = new THREE.Group();
+    const diyaGeo = new THREE.CylinderGeometry(0.24, 0.12, 0.15, 12);
+    const diyaMat = new THREE.MeshStandardMaterial({ color: 0x92400e, roughness: 0.7 });
+    const flameGeo = new THREE.ConeGeometry(0.12, 0.35, 8);
+    const flameMat = new THREE.MeshBasicMaterial({ color: 0xffdd44 });
+
+    for (let x = -14; x <= 14; x += 7) {
+      if (Math.abs(x) < 2) continue;
+      for (let z = 5; z >= -45; z -= 8) {
+        const dMesh = new THREE.Mesh(diyaGeo, diyaMat);
+        dMesh.position.set(x + (Math.random() - 0.5) * 0.4, 0.08, z);
+        const fMesh = new THREE.Mesh(flameGeo, flameMat);
+        fMesh.position.y = 0.22;
+        dMesh.add(fMesh);
+        diyaGroup.add(dMesh);
+      }
+    }
+    scene.add(diyaGroup);
+
+    // Distant Temple & Fairground Silhouettes
+    const backgroundGroup = new THREE.Group();
+    for (let i = 0; i < 28; i++) {
+      const bh = 8 + Math.random() * 18;
+      const bw = 4 + Math.random() * 10;
+      const bGeo = new THREE.BoxGeometry(bw, bh, 6);
+      const bMat = new THREE.MeshBasicMaterial({ color: 0x090312 });
+      const bMesh = new THREE.Mesh(bGeo, bMat);
+      const bx = -70 + (i / 28) * 140;
+      bMesh.position.set(bx, bh / 2, -75 - Math.random() * 15);
+      backgroundGroup.add(bMesh);
+
+      // Temple Shikhara spires on some buildings
+      if (i % 3 === 0) {
+        const coneGeo = new THREE.ConeGeometry(bw * 0.45, 10, 8);
+        const coneMesh = new THREE.Mesh(coneGeo, bMat);
+        coneMesh.position.set(bx, bh + 5, bMesh.position.z);
+        backgroundGroup.add(coneMesh);
+      }
+    }
+    scene.add(backgroundGroup);
+
+    // Glowing Dussehra Full Moon in night sky
+    const moonGeo = new THREE.SphereGeometry(6.5, 32, 32);
+    const moonMat = new THREE.MeshBasicMaterial({ color: 0xfef08a });
+    const moon = new THREE.Mesh(moonGeo, moonMat);
+    moon.position.set(45, 42, -90);
+    scene.add(moon);
+
+    // Twinkling Night Stars
+    const starCount = 350;
+    const starGeo = new THREE.BufferGeometry();
+    const starPos = new Float32Array(starCount * 3);
+    for (let s = 0; s < starCount; s++) {
+      starPos[s * 3] = (Math.random() - 0.5) * 260;
+      starPos[s * 3 + 1] = 12 + Math.random() * 90;
+      starPos[s * 3 + 2] = -50 - Math.random() * 80;
+    }
+    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+    const starMat = new THREE.PointsMaterial({ color: 0xfef08a, size: 0.85, transparent: true, opacity: 0.8 });
+    const starField = new THREE.Points(starGeo, starMat);
+    scene.add(starField);
+
+    // =========================================================================
+    // 3. AUTHENTIC 3D DASHANAN RAVAN EFFIGY BUILDER
+    // =========================================================================
+    const ravanState = {
+      group: new THREE.Group(),
+      x: 0,
+      y: 0,
+      z: -38,
+      vx: 6.2,
+      maxOffset: 15,
+      isBurning: false,
+      burnTimer: 0,
+      burnLevel: 0,
+      collapseAngle: 0,
+      collapseSink: 0,
+      amritMesh: null,
+      burningMeshes: [],
+      shieldChakri: null,
+      swordMesh: null,
+      arrowAttached: null,
+      headMeshes: [],
+      stuckArrows: [],
+      celebrationShown: false
+    };
+
+    function build3DDashananRavan() {
+      const g = ravanState.group;
+      g.position.set(ravanState.x, ravanState.y, ravanState.z);
+
+      // Shared Materials
+      const goldMat = new THREE.MeshStandardMaterial({
+        color: 0xf59e0b,
+        metalness: 0.85,
+        roughness: 0.22,
+        emissive: 0xd97706,
+        emissiveIntensity: 0.2
+      });
+      const silkRedMat = new THREE.MeshStandardMaterial({
+        color: 0xd91e18,
+        roughness: 0.65,
+        metalness: 0.15
+      });
+      const silkPurpleMat = new THREE.MeshStandardMaterial({
+        color: 0x581845,
+        roughness: 0.65,
+        metalness: 0.15
+      });
+      const woodMat = new THREE.MeshStandardMaterial({
+        color: 0x451a03,
+        roughness: 0.8
+      });
+      const skinMat = new THREE.MeshStandardMaterial({
+        color: 0xd97706,
+        roughness: 0.55
+      });
+      const darkSkinMat = new THREE.MeshStandardMaterial({
+        color: 0xb45309,
+        roughness: 0.6
+      });
+
+      // 1. Pedestal Base (Chabutra)
+      const baseGeo = new THREE.CylinderGeometry(5.2, 5.8, 0.8, 16);
+      const baseMesh = new THREE.Mesh(baseGeo, woodMat);
+      baseMesh.position.y = 0.4;
+      baseMesh.castShadow = true;
+      baseMesh.receiveShadow = true;
+      g.add(baseMesh);
+
+      // Bamboo central support mast
+      const mastGeo = new THREE.CylinderGeometry(0.18, 0.22, 17, 8);
+      const mastMesh = new THREE.Mesh(mastGeo, woodMat);
+      mastMesh.position.y = 8.5;
+      g.add(mastMesh);
+
+      // 2. Multi-tiered Flared Festive Effigy Skirt (Dhoti/Ghaghra)
+      const skirtTiers = [
+        { rTop: 1.8, rBot: 3.4, h: 2.8, y: 2.2, mat: silkRedMat },
+        { rTop: 1.4, rBot: 2.4, h: 2.4, y: 4.6, mat: silkPurpleMat },
+        { rTop: 1.1, rBot: 1.7, h: 1.8, y: 6.5, mat: silkRedMat }
+      ];
+
+      skirtTiers.forEach((tier) => {
+        const sGeo = new THREE.CylinderGeometry(tier.rTop, tier.rBot, tier.h, 24);
+        const sMesh = new THREE.Mesh(sGeo, tier.mat);
+        sMesh.position.y = tier.y;
+        sMesh.castShadow = true;
+        g.add(sMesh);
+        ravanState.burningMeshes.push(sMesh);
+
+        // Gold zardozi border ring
+        const borderGeo = new THREE.TorusGeometry(tier.rBot, 0.08, 8, 24);
+        const borderMesh = new THREE.Mesh(borderGeo, goldMat);
+        borderMesh.rotation.x = Math.PI / 2;
+        borderMesh.position.y = tier.y - tier.h / 2;
+        g.add(borderMesh);
+      });
+
+      // 3. Royal Armored Torso (Kavach)
+      const torsoGeo = new THREE.CylinderGeometry(1.6, 1.1, 3.2, 16);
+      const torsoMesh = new THREE.Mesh(torsoGeo, silkPurpleMat);
+      torsoMesh.position.y = 8.8;
+      torsoMesh.castShadow = true;
+      g.add(torsoMesh);
+      ravanState.burningMeshes.push(torsoMesh);
+
+      // Golden Breastplate (Kavach Plate)
+      const chestGeo = new THREE.BoxGeometry(2.4, 2.2, 1.4);
+      const chestMesh = new THREE.Mesh(chestGeo, goldMat);
+      chestMesh.position.set(0, 9.1, 0.25);
+      g.add(chestMesh);
+
+      // Amrit Kund (Vulnerable Navel Medallion)
+      const kundOuterGeo = new THREE.CylinderGeometry(0.55, 0.55, 0.15, 24);
+      const kundOuter = new THREE.Mesh(kundOuterGeo, goldMat);
+      kundOuter.rotation.x = Math.PI / 2;
+      kundOuter.position.set(0, 7.8, 1.15);
+      g.add(kundOuter);
+
+      const kundCoreGeo = new THREE.SphereGeometry(0.35, 16, 16);
+      const kundCoreMat = new THREE.MeshStandardMaterial({
+        color: 0xff3311,
+        emissive: 0xff5500,
+        emissiveIntensity: 1.6,
+        roughness: 0.2
+      });
+      const kundCore = new THREE.Mesh(kundCoreGeo, kundCoreMat);
+      kundCore.position.set(0, 7.8, 1.25);
+      g.add(kundCore);
+      ravanState.amritMesh = kundCore;
+
+      // Golden Pauldrons (Shoulder Guards)
+      [-1.9, 1.9].forEach((px) => {
+        const pauldronGeo = new THREE.SphereGeometry(0.85, 16, 16);
+        const pauldron = new THREE.Mesh(pauldronGeo, goldMat);
+        pauldron.scale.set(1.1, 0.7, 1.0);
+        pauldron.position.set(px, 10.3, 0);
+        g.add(pauldron);
+      });
+
+      // 4. Arms & Divine Weapons (Chandrahas Sword & Chakri Shield)
+      // Left Arm holding Chandrahas Scimitar
+      const armGeo = new THREE.CylinderGeometry(0.28, 0.24, 3.2, 12);
+      const leftArm = new THREE.Mesh(armGeo, skinMat);
+      leftArm.position.set(-2.6, 9.2, 0.4);
+      leftArm.rotation.z = 0.55;
+      leftArm.rotation.x = -0.3;
+      g.add(leftArm);
+
+      // Curved Chandrahas Sword
+      const swordGroup = new THREE.Group();
+      const bladeGeo = new THREE.CylinderGeometry(0.08, 0.35, 4.4, 8);
+      const bladeMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.95, roughness: 0.1 });
+      const blade = new THREE.Mesh(bladeGeo, bladeMat);
+      blade.position.y = 2.2;
+      blade.rotation.z = -0.25;
+      swordGroup.add(blade);
+
+      const hilt = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.15, 0.3), goldMat);
+      swordGroup.add(hilt);
+      swordGroup.position.set(-3.6, 8.2, 1.4);
+      swordGroup.rotation.x = 0.4;
+      g.add(swordGroup);
+      ravanState.swordMesh = swordGroup;
+
+      // Right Arm holding Royal Spiked Shield with Spinning Chakri
+      const rightArm = new THREE.Mesh(armGeo, skinMat);
+      rightArm.position.set(2.6, 9.2, 0.4);
+      rightArm.rotation.z = -0.55;
+      rightArm.rotation.x = -0.3;
+      g.add(rightArm);
+
+      const shieldGroup = new THREE.Group();
+      const shieldBaseGeo = new THREE.CylinderGeometry(1.9, 1.9, 0.22, 24);
+      const shieldBaseMat = new THREE.MeshStandardMaterial({ color: 0x1e1b4b, metalness: 0.5, roughness: 0.4 });
+      const shieldBase = new THREE.Mesh(shieldBaseGeo, shieldBaseMat);
+      shieldBase.rotation.x = Math.PI / 2;
+      shieldGroup.add(shieldBase);
+
+      const shieldRim = new THREE.Mesh(new THREE.TorusGeometry(1.9, 0.12, 8, 24), goldMat);
+      shieldGroup.add(shieldRim);
+
+      // Chakri cracker blades on shield
+      const chakriGroup = new THREE.Group();
+      for (let c = 0; c < 8; c++) {
+        const cBlade = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.4, 0.05), goldMat);
+        cBlade.rotation.z = (c * Math.PI) / 4;
+        chakriGroup.add(cBlade);
+      }
+      chakriGroup.position.z = 0.16;
+      shieldGroup.add(chakriGroup);
+      ravanState.shieldChakri = chakriGroup;
+
+      shieldGroup.position.set(3.4, 8.6, 1.2);
+      g.add(shieldGroup);
+
+      // 5. The 10 Majestic Heads of Dashanan (Arranged in a Grand Arc)
+      const headArchGeo = new THREE.BoxGeometry(8.5, 0.25, 0.6);
+      const headBeam = new THREE.Mesh(headArchGeo, woodMat);
+      headBeam.position.set(0, 10.7, 0);
+      g.add(headBeam);
+
+      function createSingleRavanHead(isMain, index) {
+        const hGroup = new THREE.Group();
+        const headScale = isMain ? 1.45 : 0.78;
+
+        // 1. Papier-mâché Head Base (Deep dusky blue/indigo skin)
+        const skinColor = isMain ? 0x162a45 : 0x112035;
+        const headMat = new THREE.MeshStandardMaterial({
+          color: skinColor,
+          roughness: 0.65,
+          metalness: 0.2
+        });
+
+        // Sculpted Cranium
+        const craniumGeo = new THREE.SphereGeometry(0.85, 20, 20);
+        const cranium = new THREE.Mesh(craniumGeo, headMat);
+        cranium.scale.set(0.88, 1.15, 0.92);
+        hGroup.add(cranium);
+        ravanState.burningMeshes.push(cranium);
+
+        // Strong Angular Chin / Jaw
+        const jawGeo = new THREE.CylinderGeometry(0.38, 0.22, 0.5, 8);
+        const jaw = new THREE.Mesh(jawGeo, headMat);
+        jaw.position.set(0, -0.75, 0.25);
+        jaw.rotation.x = 0.35;
+        hGroup.add(jaw);
+
+        // 2. Forehead Markings: Shaivite Tripundra (3 white lines) & Red Vermilion Tilak
+        const tripundraMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        [-0.07, 0.0, 0.07].forEach((ty) => {
+          const tripGeo = new THREE.BoxGeometry(0.65, 0.03, 0.05);
+          const trip = new THREE.Mesh(tripGeo, tripundraMat);
+          trip.position.set(0, 0.52 + ty, 0.82);
+          hGroup.add(trip);
+        });
+
+        // Vertical Red Vermilion Tilak with Golden Bindu
+        const tilakMat = new THREE.MeshBasicMaterial({ color: 0xd90429 });
+        const tilakGeo = new THREE.BoxGeometry(0.09, 0.28, 0.06);
+        const tilak = new THREE.Mesh(tilakGeo, tilakMat);
+        tilak.position.set(0, 0.52, 0.85);
+        hGroup.add(tilak);
+
+        const binduMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
+        const bindu = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 8), binduMat);
+        bindu.position.set(0, 0.42, 0.86);
+        hGroup.add(bindu);
+
+        // 3. Fierce Scowling Eyebrows (Angular, heavy black demonic scowl)
+        const browMat = new THREE.MeshStandardMaterial({ color: 0x050505, roughness: 0.9 });
+        [-1, 1].forEach((side) => {
+          const browGeo = new THREE.BoxGeometry(0.36, 0.08, 0.08);
+          const brow = new THREE.Mesh(browGeo, browMat);
+          brow.position.set(side * 0.25, 0.34, 0.84);
+          brow.rotation.z = side * 0.28;
+          hGroup.add(brow);
+        });
+
+        // 4. Fierce Demon Eyes (Elongated white sclera, glowing fire-red iris, black pupil)
+        const scleraMat = new THREE.MeshBasicMaterial({ color: 0xf8fafc });
+        const irisMat = new THREE.MeshStandardMaterial({
+          color: 0xff2200,
+          emissive: 0xff3300,
+          emissiveIntensity: 1.4,
+          roughness: 0.2
+        });
+        const pupilMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+
+        [-1, 1].forEach((side) => {
+          const ex = side * 0.28;
+          const sclera = new THREE.Mesh(new THREE.SphereGeometry(0.13, 10, 10), scleraMat);
+          sclera.scale.set(1.4, 0.8, 0.6);
+          sclera.position.set(ex, 0.20, 0.80);
+          hGroup.add(sclera);
+
+          const iris = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), irisMat);
+          iris.position.set(ex, 0.20, 0.85);
+          hGroup.add(iris);
+
+          const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.04, 6, 6), pupilMat);
+          pupil.position.set(ex, 0.20, 0.89);
+          hGroup.add(pupil);
+        });
+
+        // 5. Sculpted Sharp Vedic Nose
+        const noseMat = new THREE.MeshStandardMaterial({ color: isMain ? 0x1e3654 : 0x162a45, roughness: 0.6 });
+        const noseGeo = new THREE.ConeGeometry(0.12, 0.38, 4);
+        const nose = new THREE.Mesh(noseGeo, noseMat);
+        nose.position.set(0, 0.04, 0.90);
+        nose.rotation.x = -0.35;
+        hGroup.add(nose);
+
+        // 6. Roaring Menacing Mouth with Teeth and Sharp Demon Fangs (Tusks)
+        const mouthCavityMat = new THREE.MeshBasicMaterial({ color: 0x150303 });
+        const mouthCavity = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.16, 0.15), mouthCavityMat);
+        mouthCavity.position.set(0, -0.34, 0.78);
+        hGroup.add(mouthCavity);
+
+        const toothMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const upperTeeth = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.04, 0.04), toothMat);
+        upperTeeth.position.set(0, -0.28, 0.83);
+        hGroup.add(upperTeeth);
+
+        const lowerTeeth = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.04, 0.04), toothMat);
+        lowerTeeth.position.set(0, -0.38, 0.82);
+        hGroup.add(lowerTeeth);
+
+        // Two Prominent Curved Demon Fangs / Tusks
+        [-1, 1].forEach((side) => {
+          const fangGeo = new THREE.ConeGeometry(0.05, 0.24, 8);
+          const fang = new THREE.Mesh(fangGeo, toothMat);
+          fang.position.set(side * 0.27, -0.26, 0.83);
+          fang.rotation.z = -side * 0.45;
+          fang.rotation.x = 0.2;
+          hGroup.add(fang);
+        });
+
+        // 7. THE ICONIC DUSSEHRA MUSTACHE (Dramatic upturned Rajasthani curls)
+        const stacheMat = new THREE.MeshStandardMaterial({ color: 0x050505, roughness: 0.85 });
+        const leftPts = [
+          new THREE.Vector3(0, -0.16, 0.89),
+          new THREE.Vector3(-0.22, -0.19, 0.87),
+          new THREE.Vector3(-0.48, -0.15, 0.81),
+          new THREE.Vector3(-0.72, 0.02, 0.74),
+          new THREE.Vector3(-0.88, 0.26, 0.69)
+        ];
+        const leftCurve = new THREE.CatmullRomCurve3(leftPts);
+        const leftTube = new THREE.TubeGeometry(leftCurve, 16, 0.065, 8, false);
+        hGroup.add(new THREE.Mesh(leftTube, stacheMat));
+
+        const leftTip = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.16, 8), stacheMat);
+        leftTip.position.set(-0.89, 0.29, 0.68);
+        leftTip.rotation.z = -0.55;
+        hGroup.add(leftTip);
+
+        const rightPts = [
+          new THREE.Vector3(0, -0.16, 0.89),
+          new THREE.Vector3(0.22, -0.19, 0.87),
+          new THREE.Vector3(0.48, -0.15, 0.81),
+          new THREE.Vector3(0.72, 0.02, 0.74),
+          new THREE.Vector3(0.88, 0.26, 0.69)
+        ];
+        const rightCurve = new THREE.CatmullRomCurve3(rightPts);
+        const rightTube = new THREE.TubeGeometry(rightCurve, 16, 0.065, 8, false);
+        hGroup.add(new THREE.Mesh(rightTube, stacheMat));
+
+        const rightTip = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.16, 8), stacheMat);
+        rightTip.position.set(0.89, 0.29, 0.68);
+        rightTip.rotation.z = 0.55;
+        hGroup.add(rightTip);
+
+        // 8. Royal Multi-Tiered Golden Mukut (Crown)
+        const crownBaseGeo = new THREE.CylinderGeometry(0.96, 0.88, 0.42, 16);
+        const crownBase = new THREE.Mesh(crownBaseGeo, goldMat);
+        crownBase.position.y = 0.98;
+        hGroup.add(crownBase);
+
+        for (let s = 0; s < 8; s++) {
+          const angle = (s / 8) * Math.PI - Math.PI / 2;
+          const studMat = s % 2 === 0
+            ? new THREE.MeshStandardMaterial({ color: 0xd90429, roughness: 0.1, metalness: 0.9 })
+            : new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.1, metalness: 0.9 });
+          const stud = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), studMat);
+          stud.position.set(Math.sin(angle) * 0.94, 0.98, Math.cos(angle) * 0.94);
+          hGroup.add(stud);
+        }
+
+        // Golden Arch Aureole (Chandrika / Halo arch behind head)
+        const haloGeo = new THREE.RingGeometry(0.75, 1.35, 24, 1, 0, Math.PI);
+        const haloMat = new THREE.MeshStandardMaterial({
+          color: 0xf59e0b,
+          metalness: 0.85,
+          roughness: 0.2,
+          side: THREE.DoubleSide
+        });
+        const halo = new THREE.Mesh(haloGeo, haloMat);
+        halo.position.set(0, 1.1, -0.2);
+        hGroup.add(halo);
+
+        // Multi-tier Conical Spire
+        const crownConeGeo = new THREE.ConeGeometry(0.82, isMain ? 2.3 : 1.45, 16);
+        const crownCone = new THREE.Mesh(crownConeGeo, goldMat);
+        crownCone.position.y = isMain ? 2.15 : 1.65;
+        hGroup.add(crownCone);
+
+        // Golden Kalash Finial at Crown Peak
+        const kalash = new THREE.Mesh(new THREE.SphereGeometry(isMain ? 0.22 : 0.14, 12, 12), goldMat);
+        kalash.position.y = isMain ? 3.35 : 2.45;
+        hGroup.add(kalash);
+
+        // Central Ruby Crest on Crown
+        const crestRuby = new THREE.Mesh(
+          new THREE.SphereGeometry(0.18, 10, 10),
+          new THREE.MeshStandardMaterial({ color: 0xd90429, metalness: 0.9, roughness: 0.15 })
+        );
+        crestRuby.position.set(0, 1.4, 0.85);
+        hGroup.add(crestRuby);
+
+        // 9. Royal Kundal (Golden ring earrings with ruby drops)
+        [-0.88, 0.88].forEach((kx) => {
+          const kGeo = new THREE.TorusGeometry(0.25, 0.06, 8, 16);
+          const kundal = new THREE.Mesh(kGeo, goldMat);
+          kundal.position.set(kx, -0.15, 0.1);
+          kundal.rotation.y = Math.PI / 2;
+          hGroup.add(kundal);
+
+          const dropMat = new THREE.MeshStandardMaterial({ color: 0xd90429, metalness: 0.8, roughness: 0.2 });
+          const drop = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), dropMat);
+          drop.position.set(kx, -0.42, 0.1);
+          hGroup.add(drop);
+        });
+
+        hGroup.scale.set(headScale, headScale, headScale);
+        return hGroup;
+      }
+
+      // Center Majestic Head (10th Head)
+      const centerHead = createSingleRavanHead(true, 0);
+      centerHead.position.set(0, 11.9, 0.35);
+      g.add(centerHead);
+      ravanState.headMeshes.push(centerHead);
+
+      // 4 Heads Left, 5 Heads Right in a parabolic arc
+      const leftPositions = [-1.35, -2.5, -3.55, -4.5];
+      const rightPositions = [1.35, 2.5, 3.55, 4.5, 5.4];
+
+      leftPositions.forEach((pos, idx) => {
+        const h = createSingleRavanHead(false, idx + 1);
+        const droop = Math.pow(Math.abs(pos) / 5, 2) * 0.45;
+        h.position.set(pos, 11.4 - droop, -Math.abs(pos) * 0.12);
+        h.rotation.y = pos * 0.08;
+        g.add(h);
+        ravanState.headMeshes.push(h);
+      });
+
+      rightPositions.forEach((pos, idx) => {
+        const h = createSingleRavanHead(false, idx + 5);
+        const droop = Math.pow(Math.abs(pos) / 5, 2) * 0.45;
+        h.position.set(pos, 11.4 - droop, -Math.abs(pos) * 0.12);
+        h.rotation.y = pos * 0.08;
+        g.add(h);
+        ravanState.headMeshes.push(h);
+      });
+
+      // Red Diwali Cracker Ladis draped on Ravan
+      const ladiGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.3, 8);
+      const ladiMat = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.5 });
+      for (let ly = 2; ly <= 9; ly += 0.9) {
+        [-1.6, 1.6].forEach((lx) => {
+          const ladi = new THREE.Mesh(ladiGeo, ladiMat);
+          ladi.position.set(lx + (Math.random() - 0.5) * 0.2, ly, 1.0);
+          ladi.rotation.z = (Math.random() - 0.5) * 0.6;
+          g.add(ladi);
+        });
+      }
+
+      scene.add(g);
+    }
+
+    build3DDashananRavan();
+
+    // =========================================================================
+    // 4. BOTTOM-CENTER KODANDA BOW & ARROW (UNOBSTRUCTED VIEW OF RAVAN)
+    // =========================================================================
+    // Symmetrically held at the bottom-center of the camera view:
+    // Riser at X = 0, Y = -0.36, Z = -0.85
+    // Horizontal recurve limbs extend to left (-X) and right (+X) along the bottom edge,
+    // leaving the ENTIRE central and upper 85% of the screen crystal-clear to view Ravan!
+    const bowRig = new THREE.Group();
+    const DEFAULT_LOCAL_BOW_POS = new THREE.Vector3(0, -0.34, -0.85);
+    const DEFAULT_LOCAL_BOW_ROT = new THREE.Euler(0.12, 0, 0);
+    bowRig.position.copy(DEFAULT_LOCAL_BOW_POS);
+    bowRig.rotation.copy(DEFAULT_LOCAL_BOW_ROT);
+    bowRig.scale.set(0.44, 0.44, 0.44);
+    camera.add(bowRig);
+
+    function updateResponsiveCamera() {
+      W = window.innerWidth;
+      H = window.innerHeight;
+      const aspect = W / H;
+      camera.aspect = aspect;
+      if (aspect < 1.0) {
+        // Portrait mobile screen: widen vertical FOV dynamically to comfortably preserve horizontal view of Ravan & all 10 heads
+        baseFOV = Math.min(68, Math.max(50, 50 + (1.0 - aspect) * 28));
+        const mobileScale = Math.min(0.44, 0.30 + aspect * 0.16);
+        bowRig.scale.set(mobileScale, mobileScale, mobileScale);
+        const bowY = -0.85 * Math.tan((baseFOV * Math.PI / 180) / 2) * 0.72;
+        DEFAULT_LOCAL_BOW_POS.set(0, bowY, -0.85);
+      } else {
+        baseFOV = 48;
+        bowRig.scale.set(0.44, 0.44, 0.44);
+        DEFAULT_LOCAL_BOW_POS.set(0, -0.34, -0.85);
+      }
+      bowRig.position.copy(DEFAULT_LOCAL_BOW_POS);
+      camera.fov = baseFOV;
+      camera.updateProjectionMatrix();
+      renderer.setSize(W, H);
+    }
+    updateResponsiveCamera();
+
+    const bowState = {
+      leftMesh: null,
+      rightMesh: null,
+      stringLine: null
+    };
+
+    function createHorizontalLimbGeometry(isLeft) {
+      const sign = isLeft ? -1 : 1;
+      // Elegant horizontal recurve spline sweeping left/right along the bottom
+      const points = [
+        new THREE.Vector3(0, 0, 0.02),
+        new THREE.Vector3(sign * 0.28, 0.02, -0.06),
+        new THREE.Vector3(sign * 0.62, 0.04, -0.14),
+        new THREE.Vector3(sign * 0.95, 0.07, -0.10),
+        new THREE.Vector3(sign * 1.18, 0.12, 0.02),
+        new THREE.Vector3(sign * 1.32, 0.16, 0.12)
+      ];
+      const curve = new THREE.CatmullRomCurve3(points);
+      const geo = new THREE.TubeGeometry(curve, 32, 0.045, 12, false);
+      return { geo, curve };
+    }
+
+    function build3DBow() {
+      const bowGoldMat = new THREE.MeshStandardMaterial({
+        color: 0xf59e0b,
+        metalness: 0.88,
+        roughness: 0.22,
+        emissive: 0xd97706,
+        emissiveIntensity: 0.28
+      });
+      const gripMat = new THREE.MeshStandardMaterial({
+        color: 0x831843,
+        roughness: 0.65
+      });
+
+      // Central Leather Grip Riser (horizontal grip)
+      const gripGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.48, 16);
+      const grip = new THREE.Mesh(gripGeo, gripMat);
+      grip.rotation.z = Math.PI / 2;
+      bowRig.add(grip);
+
+      // Gold grip accents
+      [-0.22, 0.22].forEach((gx) => {
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.022, 8, 16), bowGoldMat);
+        ring.rotation.y = Math.PI / 2;
+        ring.position.x = gx;
+        bowRig.add(ring);
+      });
+
+      // Arrow Rest Shelf at dead center
+      const shelfGeo = new THREE.BoxGeometry(0.12, 0.04, 0.14);
+      const shelf = new THREE.Mesh(shelfGeo, bowGoldMat);
+      shelf.position.set(0, 0.04, -0.04);
+      bowRig.add(shelf);
+
+      // Left & Right Horizontal Recurve Limbs
+      const leftLimb = createHorizontalLimbGeometry(true);
+      const leftMesh = new THREE.Mesh(leftLimb.geo, bowGoldMat);
+      bowRig.add(leftMesh);
+      bowState.leftMesh = leftMesh;
+
+      const rightLimb = createHorizontalLimbGeometry(false);
+      const rightMesh = new THREE.Mesh(rightLimb.geo, bowGoldMat);
+      bowRig.add(rightMesh);
+      bowState.rightMesh = rightMesh;
+
+      // 3D Taut Dynamic Bowstring (from left tip -> center nock -> right tip)
+      const stringGeo = new THREE.BufferGeometry();
+      const stringPositions = new Float32Array([
+        -1.32, 0.16, 0.12,
+        0, 0.04, 0.02,
+        1.32, 0.16, 0.12
+      ]);
+      stringGeo.setAttribute('position', new THREE.BufferAttribute(stringPositions, 3));
+      const stringMat = new THREE.LineBasicMaterial({ color: 0xfef08a, linewidth: 2 });
+      const stringLine = new THREE.Line(stringGeo, stringMat);
+      bowRig.add(stringLine);
+      bowState.stringLine = stringLine;
+    }
+
+    build3DBow();
+
+    function updateBowDrawVisual(pullDistance) {
+      const nockZ = pullDistance * 0.95;
+      const positions = bowState.stringLine.geometry.attributes.position.array;
+
+      // Left Tip
+      positions[0] = -1.32 + pullDistance * 0.05;
+      positions[1] = 0.16;
+      positions[2] = 0.12 - pullDistance * 0.10;
+
+      // Center Nock Point pulled backward with arrow
+      positions[3] = 0;
+      positions[4] = 0.04;
+      positions[5] = 0.02 + nockZ;
+
+      // Right Tip
+      positions[6] = 1.32 - pullDistance * 0.05;
+      positions[7] = 0.16;
+      positions[8] = 0.12 - pullDistance * 0.10;
+
+      bowState.stringLine.geometry.attributes.position.needsUpdate = true;
+    }
+
+    // =========================================================================
+    // 5. 3D AGNEYASTRA (DIVINE FIERY ARROW) BUILDER
+    // =========================================================================
+    function create3DArrowMesh() {
+      const arrowGroup = new THREE.Group();
+
+      const shaftMat = new THREE.MeshStandardMaterial({
+        color: 0x92400e,
+        metalness: 0.35,
+        roughness: 0.45
+      });
+      const tipGoldMat = new THREE.MeshStandardMaterial({
+        color: 0xfef08a,
+        metalness: 0.92,
+        roughness: 0.12,
+        emissive: 0xf59e0b,
+        emissiveIntensity: 0.45
+      });
+      const fletchMat = new THREE.MeshStandardMaterial({
+        color: 0xd91e18,
+        roughness: 0.5
+      });
+
+      // Wooden Shaft (Length = 2.4 units, points along -Z)
+      const shaftGeo = new THREE.CylinderGeometry(0.035, 0.035, 2.4, 12);
+      const shaft = new THREE.Mesh(shaftGeo, shaftMat);
+      shaft.rotation.x = Math.PI / 2;
+      arrowGroup.add(shaft);
+
+      // Ornate 3D Broadhead Arrowhead at front (-Z)
+      const tipGeo = new THREE.ConeGeometry(0.14, 0.55, 4);
+      const tip = new THREE.Mesh(tipGeo, tipGoldMat);
+      tip.rotation.x = -Math.PI / 2;
+      tip.position.z = -1.35;
+      arrowGroup.add(tip);
+
+      // Barbed wings
+      const wingGeo = new THREE.BoxGeometry(0.32, 0.02, 0.25);
+      const wings = new THREE.Mesh(wingGeo, tipGoldMat);
+      wings.position.z = -1.15;
+      arrowGroup.add(wings);
+
+      // 3 Barbed Fletching Feathers at rear (+Z)
+      for (let f = 0; f < 3; f++) {
+        const featherGeo = new THREE.BoxGeometry(0.015, 0.18, 0.45);
+        const feather = new THREE.Mesh(featherGeo, fletchMat);
+        feather.position.z = 0.95;
+        feather.rotation.z = (f * Math.PI * 2) / 3;
+        arrowGroup.add(feather);
+      }
+
+      return arrowGroup;
+    }
+
+    const nockedArrow = create3DArrowMesh();
+    // Dead center position resting on the shelf
+    nockedArrow.position.set(0, 0.04, 0.02);
+    bowRig.add(nockedArrow);
+
+    // =========================================================================
+    // 6. EXACT 3D TRAJECTORY PREVIEW (MATHEMATICAL BALLISTIC PARABOLA)
+    // =========================================================================
+    const GRAVITY_3D = 15.5; // Physics gravity in m/s^2
+
+    const trajectoryLinePoints = 42;
+    const trajectoryGeo = new THREE.BufferGeometry();
+    const trajPositions = new Float32Array(trajectoryLinePoints * 3);
+    trajectoryGeo.setAttribute('position', new THREE.BufferAttribute(trajPositions, 3));
+    const trajectoryMat = new THREE.LineBasicMaterial({
+      color: 0xfde047,
+      linewidth: 3,
+      transparent: true,
+      opacity: 0.95
+    });
+    const trajectoryLine = new THREE.Line(trajectoryGeo, trajectoryMat);
+    scene.add(trajectoryLine);
+    trajectoryLine.visible = false;
+
+    // Glowing impact reticle on target plane
+    const reticleGeo = new THREE.RingGeometry(0.5, 0.75, 24);
+    const reticleMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b, side: THREE.DoubleSide });
+    const reticle = new THREE.Mesh(reticleGeo, reticleMat);
+    scene.add(reticle);
+    reticle.visible = false;
+
+    // =========================================================================
+    // 7. ARROW FLIGHT DYNAMICS & FIRE PARTICLES
+    // =========================================================================
+    const arrowState = {
+      state: 'READY', // 'READY', 'AIMING', 'FLYING', 'HIT'
+      mesh: null,
+      pos: new THREE.Vector3(),
+      vel: new THREE.Vector3()
+    };
+
+    // =========================================================================
+    // 7. REALISTIC VOLUMETRIC PROCEDURAL FIRE & SMOKE SYSTEM
+    // =========================================================================
+    const fireTextures = (function() {
+      // 1. High-Quality Radial Flame Texture (White-hot core -> Golden yellow -> Fiery orange -> Crimson)
+      const fCanvas = document.createElement('canvas');
+      fCanvas.width = 128;
+      fCanvas.height = 128;
+      const fCtx = fCanvas.getContext('2d');
+      const fGrad = fCtx.createRadialGradient(64, 76, 4, 64, 64, 58);
+      fGrad.addColorStop(0.0, 'rgba(255, 255, 255, 1.0)');  // Incandescent core
+      fGrad.addColorStop(0.22, 'rgba(255, 230, 70, 0.95)'); // Golden fire
+      fGrad.addColorStop(0.52, 'rgba(255, 100, 15, 0.85)'); // Fiery orange
+      fGrad.addColorStop(0.8, 'rgba(220, 35, 0, 0.45)');   // Deep crimson edge
+      fGrad.addColorStop(1.0, 'rgba(0, 0, 0, 0.0)');
+      fCtx.fillStyle = fGrad;
+      fCtx.fillRect(0, 0, 128, 128);
+      const flameTex = new THREE.CanvasTexture(fCanvas);
+
+      // 2. Soft Turbulent Charcoal Smoke Texture
+      const sCanvas = document.createElement('canvas');
+      sCanvas.width = 128;
+      sCanvas.height = 128;
+      const sCtx = sCanvas.getContext('2d');
+      const sGrad = sCtx.createRadialGradient(64, 64, 6, 64, 64, 58);
+      sGrad.addColorStop(0.0, 'rgba(55, 40, 50, 0.6)');
+      sGrad.addColorStop(0.35, 'rgba(38, 28, 38, 0.38)');
+      sGrad.addColorStop(0.7, 'rgba(22, 16, 26, 0.16)');
+      sGrad.addColorStop(1.0, 'rgba(0, 0, 0, 0.0)');
+      sCtx.fillStyle = sGrad;
+      sCtx.fillRect(0, 0, 128, 128);
+      const smokeTex = new THREE.CanvasTexture(sCanvas);
+
+      // 3. Glowing Ember / Fire Spark Texture
+      const eCanvas = document.createElement('canvas');
+      eCanvas.width = 64;
+      eCanvas.height = 64;
+      const eCtx = eCanvas.getContext('2d');
+      const eGrad = eCtx.createRadialGradient(32, 32, 2, 32, 32, 30);
+      eGrad.addColorStop(0.0, 'rgba(255, 255, 240, 1.0)');
+      eGrad.addColorStop(0.3, 'rgba(255, 190, 40, 0.95)');
+      eGrad.addColorStop(0.7, 'rgba(240, 70, 10, 0.5)');
+      eGrad.addColorStop(1.0, 'rgba(0, 0, 0, 0.0)');
+      eCtx.fillStyle = eGrad;
+      eCtx.fillRect(0, 0, 64, 64);
+      const emberTex = new THREE.CanvasTexture(eCanvas);
+
+      return { flameTex, smokeTex, emberTex };
+    })();
+
+    function createStuckFlameCluster(localPos, arrowIndex) {
+      const flameGroup = new THREE.Group();
+      // Ensure flame is placed prominently in front of Ravan's geometry so it is never occluded
+      const frontZ = Math.max(localPos.z + 0.35, 1.55);
+      flameGroup.position.set(localPos.x, localPos.y, frontZ);
+
+      // Large roaring flame scale: 4.5 to 8.2 units tall (half of Ravan's height!)
+      const baseScale = 1.35 + Math.min(1.0, arrowIndex * 0.28);
+
+      // Layer 1: Incandescent White-Hot Core
+      const coreMat = new THREE.SpriteMaterial({
+        map: fireTextures.flameTex,
+        blending: THREE.AdditiveBlending,
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.98,
+        depthWrite: false,
+        depthTest: false
+      });
+      const coreSprite = new THREE.Sprite(coreMat);
+      coreSprite.scale.set(2.2 * baseScale, 3.8 * baseScale, 1);
+      coreSprite.position.set(0, 1.2 * baseScale, 0.2);
+      coreSprite.renderOrder = 32;
+      flameGroup.add(coreSprite);
+
+      // Layer 2: Main Roaring Golden Flame Tongue
+      const mainMat = new THREE.SpriteMaterial({
+        map: fireTextures.flameTex,
+        blending: THREE.AdditiveBlending,
+        color: 0xffaa00,
+        transparent: true,
+        opacity: 0.94,
+        depthWrite: false,
+        depthTest: false
+      });
+      const mainSprite = new THREE.Sprite(mainMat);
+      mainSprite.scale.set(3.6 * baseScale, 5.8 * baseScale, 1);
+      mainSprite.position.set(0, 2.0 * baseScale, 0.25);
+      mainSprite.renderOrder = 31;
+      flameGroup.add(mainSprite);
+
+      // Layer 3: Blazing Fiery Orange/Crimson Leaping Tongue
+      const outerMat = new THREE.SpriteMaterial({
+        map: fireTextures.flameTex,
+        blending: THREE.AdditiveBlending,
+        color: 0xff3300,
+        transparent: true,
+        opacity: 0.85,
+        depthWrite: false,
+        depthTest: false
+      });
+      const outerSprite = new THREE.Sprite(outerMat);
+      outerSprite.scale.set(4.8 * baseScale, 7.6 * baseScale, 1);
+      outerSprite.position.set(0, 2.6 * baseScale, 0.3);
+      outerSprite.renderOrder = 30;
+      flameGroup.add(outerSprite);
+
+      // Layer 4: Upper Soaring Flame Lick
+      const lickMat = new THREE.SpriteMaterial({
+        map: fireTextures.flameTex,
+        blending: THREE.AdditiveBlending,
+        color: 0xff6600,
+        transparent: true,
+        opacity: 0.75,
+        depthWrite: false,
+        depthTest: false
+      });
+      const lickSprite = new THREE.Sprite(lickMat);
+      lickSprite.scale.set(3.0 * baseScale, 6.2 * baseScale, 1);
+      lickSprite.position.set(0, 3.4 * baseScale, 0.35);
+      lickSprite.renderOrder = 29;
+      flameGroup.add(lickSprite);
+
+      // Dynamic Fire Light casting bright orange illumination onto Ravan's frame and surroundings
+      const fireLight = new THREE.PointLight(0xff5500, 7.5, 26);
+      fireLight.position.set(0, 1.8 * baseScale, 0.8);
+      flameGroup.add(fireLight);
+
+      return {
+        group: flameGroup,
+        coreSprite,
+        mainSprite,
+        outerSprite,
+        lickSprite,
+        fireLight,
+        baseScale,
+        seed: Math.random() * 50,
+        particleTimer: 0,
+        smokeTimer: 0
+      };
+    }
+
+    // Particle Systems for Sparks, Fire, and Sky Fireworks
+    const sparkParticles = [];
+    const crackerFlashes = [];
+    const skyFireworks = [];
+
+    const sparkGeo = new THREE.SphereGeometry(0.12, 6, 6);
+
+    function spawnHitExplosion(hitPos, isNavelCritical = false) {
+      sound.playSkyBomb();
+
+      // Giant incandescent flash point light
+      const flash = new THREE.PointLight(0xffddaa, isNavelCritical ? 9.5 : 6.0, 38);
+      flash.position.copy(hitPos);
+      scene.add(flash);
+      crackerFlashes.push({ light: flash, life: 0.38 });
+
+      // Spurt of 65 glowing golden/orange embers (NO RANDOM CYAN/BLUE COLORS)
+      const sparkCount = isNavelCritical ? 85 : 45;
+      for (let i = 0; i < sparkCount; i++) {
+        const eMat = new THREE.SpriteMaterial({
+          map: fireTextures.emberTex,
+          blending: THREE.AdditiveBlending,
+          color: [0xffffff, 0xffd000, 0xff6600][Math.floor(Math.random() * 3)],
+          transparent: true,
+          opacity: 1.0,
+          depthWrite: false
+        });
+        const mesh = new THREE.Sprite(eMat);
+        mesh.position.copy(hitPos);
+        const sc = 0.5 + Math.random() * 0.7;
+        mesh.scale.set(sc, sc, 1);
+        scene.add(mesh);
+
+        const v = new THREE.Vector3(
+          (Math.random() - 0.5) * 15,
+          Math.random() * 11 + 3.5,
+          (Math.random() - 0.5) * 15
+        );
+        sparkParticles.push({
+          mesh,
+          vel: v,
+          growth: -0.3,
+          life: 0.5 + Math.random() * 0.7,
+          maxLife: 1.2
+        });
+      }
+
+      // Chain of Diwali Crackers bursting along Ravan
+      spawnRavanCrackerBarrage(isNavelCritical ? 14 : 7);
+    }
+
+    function spawnRavanCrackerBarrage(count = 5) {
+      for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+          if (!ravanState.isBurning) return;
+          const rx = ravanState.group.position.x + (Math.random() - 0.5) * 7.5;
+          const ry = 2 + Math.random() * 11;
+          const rz = ravanState.group.position.z + (Math.random() - 0.5) * 1.5;
+          const burstPos = new THREE.Vector3(rx, ry, rz);
+
+          sound.playCrackerPop(1.0);
+
+          const cLight = new THREE.PointLight(0xffcc44, 3.2, 14);
+          cLight.position.copy(burstPos);
+          scene.add(cLight);
+          crackerFlashes.push({ light: cLight, life: 0.16 });
+
+          for (let s = 0; s < 12; s++) {
+            const mat = new THREE.MeshBasicMaterial({ color: Math.random() < 0.5 ? 0xffffff : 0xff9900 });
+            const m = new THREE.Mesh(sparkGeo, mat);
+            m.position.copy(burstPos);
+            scene.add(m);
+            const vel = new THREE.Vector3(
+              (Math.random() - 0.5) * 9,
+              (Math.random() - 0.2) * 8,
+              (Math.random() - 0.5) * 9
+            );
+            sparkParticles.push({ mesh: m, vel, life: 0.35 + Math.random() * 0.3 });
+          }
+        }, i * 90);
+      }
+    }
+
+    function spawnSkyRocketShell() {
+      const sx = (Math.random() - 0.5) * 50;
+      const sy = 24 + Math.random() * 18;
+      const sz = -45 - Math.random() * 25;
+      const burstPos = new THREE.Vector3(sx, sy, sz);
+
+      sound.playSkyBomb();
+
+      const palette = [0xff4422, 0xffdd44, 0x4ade80, 0x38bdf8, 0xf472b6];
+      const color = palette[Math.floor(Math.random() * palette.length)];
+
+      const fLight = new THREE.PointLight(color, 6.0, 45);
+      fLight.position.copy(burstPos);
+      scene.add(fLight);
+      crackerFlashes.push({ light: fLight, life: 0.45 });
+
+      for (let i = 0; i < 48; i++) {
+        const mat = new THREE.MeshBasicMaterial({ color });
+        const m = new THREE.Mesh(sparkGeo, mat);
+        m.position.copy(burstPos);
+        scene.add(m);
+
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        const spd = 6 + Math.random() * 12;
+        const vel = new THREE.Vector3(
+          Math.sin(phi) * Math.cos(theta) * spd,
+          Math.cos(phi) * spd,
+          Math.sin(phi) * Math.sin(theta) * spd
+        );
+        skyFireworks.push({ mesh: m, vel, life: 0.8 + Math.random() * 0.7 });
+      }
+    }
+
+    // =========================================================================
+    // 8. UNIFIED, INTUITIVE AIMING & ACCURATE BALLISTICS MATH
+    // =========================================================================
+    let aimMode = 'slingshot'; // 'slingshot' or 'direct'
+    let dahanCount = 0;
+
+    const drag = {
+      active: false,
+      startX: 0,
+      startY: 0,
+      currX: 0,
+      currY: 0,
+      power: 0, // 0.0 to 1.0
+      pitch: 0.18, // radians above horizontal
+      yaw: 0.0 // radians horizontal
+    };
+
+    function getArrowTipWorldPos() {
+      const arrowTipLocal = new THREE.Vector3(0, 0.04, -1.35);
+      return arrowTipLocal.applyMatrix4(nockedArrow.matrixWorld);
+    }
+
+    function calculateLaunchParameters() {
+      // Launch velocity calculation
+      const minSpeed = 28;
+      const maxSpeed = 56;
+      const speed = minSpeed + drag.power * (maxSpeed - minSpeed);
+
+      // In Three.js:
+      // -Z is forward into the scene towards Ravan
+      // +X is right, -X is left
+      // +Y is up
+      const vx = speed * Math.cos(drag.pitch) * Math.sin(drag.yaw);
+      const vy = speed * Math.sin(drag.pitch);
+      const vz = -speed * Math.cos(drag.pitch) * Math.cos(drag.yaw);
+
+      const startPos = getArrowTipWorldPos();
+
+      return {
+        speed,
+        velocity: new THREE.Vector3(vx, vy, vz),
+        startPos
+      };
+    }
+
+    function updateTrajectoryDisplay() {
+      const { velocity, startPos } = calculateLaunchParameters();
+      const dt = 0.045;
+      let currPos = startPos.clone();
+      let currVel = velocity.clone();
+      const posAttr = trajectoryLine.geometry.attributes.position;
+
+      for (let i = 0; i < trajectoryLinePoints; i++) {
+        posAttr.setXYZ(i, currPos.x, currPos.y, currPos.z);
+        currPos.addScaledVector(currVel, dt);
+        currVel.y -= GRAVITY_3D * dt;
+      }
+      posAttr.needsUpdate = true;
+      trajectoryLine.visible = true;
+
+      // Position targeting reticle at Z = ravanState.z
+      const tAtRavanZ = (ravanState.z - startPos.z) / velocity.z;
+      if (tAtRavanZ > 0) {
+        const predX = startPos.x + velocity.x * tAtRavanZ;
+        const predY = startPos.y + velocity.y * tAtRavanZ - 0.5 * GRAVITY_3D * tAtRavanZ * tAtRavanZ;
+        reticle.position.set(predX, Math.max(0.2, predY), ravanState.z + 0.1);
+        reticle.visible = true;
+      } else {
+        reticle.visible = false;
+      }
+    }
+
+    function launchArrow() {
+      if (drag.power < 0.12) {
+        resetBowToReady();
+        return;
+      }
+
+      sound.playBowRelease(drag.power);
+      document.getElementById('aimHintPill').style.opacity = '0';
+
+      const { velocity, startPos } = calculateLaunchParameters();
+
+      // Detach arrow from bow and create in world space
+      arrowState.state = 'FLYING';
+      nockedArrow.visible = false;
+
+      const flyingArrow = create3DArrowMesh();
+      flyingArrow.position.copy(startPos);
+      scene.add(flyingArrow);
+
+      arrowState.mesh = flyingArrow;
+      arrowState.pos.copy(startPos);
+      arrowState.vel.copy(velocity);
+      arrowLight.intensity = 2.5;
+
+      trajectoryLine.visible = false;
+      reticle.visible = false;
+      updateBowDrawVisual(0);
+    }
+
+    function resetBowToReady() {
+      drag.active = false;
+      drag.power = 0;
+      arrowState.state = 'READY';
+      nockedArrow.visible = true;
+      nockedArrow.position.set(0, 0.04, 0.02);
+      trajectoryLine.visible = false;
+      reticle.visible = false;
+      updateBowDrawVisual(0);
+      bowRig.position.copy(DEFAULT_LOCAL_BOW_POS);
+      bowRig.rotation.copy(DEFAULT_LOCAL_BOW_ROT);
+      camera.fov = baseFOV;
+      camera.updateProjectionMatrix();
+      updateHUD();
+    }
+
+    // =========================================================================
+    // 9. POINTER / TOUCH INTERACTION
+    // =========================================================================
+    function getPointerXY(e) {
+      if (e.touches && e.touches.length > 0) {
+        return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      }
+      return { x: e.clientX, y: e.clientY };
+    }
+
+    function onPointerDown(e) {
+      if (e.target.closest('button') || e.target.closest('header')) return;
+      sound.init();
+
+      if (arrowState.state === 'HIT' || arrowState.state === 'FLYING') return;
+
+      const p = getPointerXY(e);
+      drag.active = true;
+      drag.startX = p.x;
+      drag.startY = p.y;
+      drag.currX = p.x;
+      drag.currY = p.y;
+      drag.power = 0.2;
+      drag.pitch = 0.18;
+      drag.yaw = 0.0;
+      arrowState.state = 'AIMING';
+
+      updateHUD();
+      updateTrajectoryDisplay();
+    }
+
+    function onPointerMove(e) {
+      if (!drag.active || arrowState.state !== 'AIMING') return;
+      if (e.cancelable) e.preventDefault();
+      const p = getPointerXY(e);
+      drag.currX = p.x;
+      drag.currY = p.y;
+
+      const dx = drag.currX - drag.startX;
+      const dy = drag.currY - drag.startY;
+      const maxDrag = Math.min(W, H) * 0.32;
+
+      if (aimMode === 'slingshot') {
+        // Slingshot: Pulling down pulls string back (increases tension & power)
+        // Pulling down-left angles arrow to the right; pulling down-right angles arrow to the left
+        const pullDist = Math.hypot(dx, Math.max(15, dy));
+        drag.power = Math.min(1.0, Math.max(0.12, pullDist / maxDrag));
+
+        // When pulling string to left (-dx), arrow aims right (+yaw)
+        drag.yaw = Math.max(-0.48, Math.min(0.48, -dx / (maxDrag * 1.2)));
+
+        // Downward drag increases elevation pitch smoothly
+        const normDy = Math.max(0, Math.min(1.2, dy / maxDrag));
+        drag.pitch = 0.12 + normDy * 0.34;
+      } else {
+        // Direct Aim: Dragging right aims right; dragging up increases elevation
+        drag.power = Math.min(1.0, Math.max(0.2, (drag.startY - drag.currY + 80) / maxDrag));
+        drag.yaw = Math.max(-0.48, Math.min(0.48, dx / (maxDrag * 1.2)));
+        drag.pitch = 0.14 + Math.max(0, -dy / (maxDrag * 1.5));
+      }
+
+      // MATHEMATICALLY SYNCHRONIZED 3D ROTATION:
+      // Rotating -drag.yaw around Y turns forward direction towards +X (RIGHT) when yaw > 0.
+      // Rotating +drag.pitch around X elevates forward direction towards +Y (UP) when pitch > 0.
+      // The horizontal bottom-center bow pitches and yaws in exact unison with the trajectory arc!
+      bowRig.rotation.y = DEFAULT_LOCAL_BOW_ROT.y - drag.yaw;
+      bowRig.rotation.x = DEFAULT_LOCAL_BOW_ROT.x + drag.pitch;
+
+      // Flex bowstring & pull arrow back
+      updateBowDrawVisual(drag.power * 0.8);
+      nockedArrow.position.z = 0.02 + drag.power * 0.72;
+
+      // Zoom FOV subtly for archer focus
+      camera.fov = baseFOV - drag.power * 5;
+      camera.updateProjectionMatrix();
+
+      sound.playBowPull(drag.power);
+      updateTrajectoryDisplay();
+      updateHUD();
+    }
+
+    function onPointerUp() {
+      if (!drag.active || arrowState.state !== 'AIMING') return;
+      drag.active = false;
+      launchArrow();
+    }
+
+    canvas.addEventListener('mousedown', onPointerDown);
+    window.addEventListener('mousemove', onPointerMove);
+    window.addEventListener('mouseup', onPointerUp);
+
+    canvas.addEventListener('touchstart', onPointerDown, { passive: true });
+    window.addEventListener('touchmove', onPointerMove, { passive: false });
+    window.addEventListener('touchend', onPointerUp);
+
+    // =========================================================================
+    // 10. HUD & USER INTERFACE CONTROLS (NO EMOJIS COMPLIANT)
+    // =========================================================================
+    const hudPower = document.getElementById('hudPower');
+    const hudAngle = document.getElementById('hudAngle');
+    const hudScore = document.getElementById('hudScore');
+    const hudFire = document.getElementById('hudFire');
+    const mobileHudScore = document.getElementById('mobileHudScore');
+    const mobileHudFire = document.getElementById('mobileHudFire');
+    const aimModeToggleBtn = document.getElementById('aimModeToggleBtn');
+    const aimModeLabel = document.getElementById('aimModeLabel');
+    const speedToggleBtn = document.getElementById('speedToggleBtn');
+    const speedLabel = document.getElementById('speedLabel');
+    const muteToggleBtn = document.getElementById('muteToggleBtn');
+    const audioIcon = document.getElementById('audioIcon');
+    const muteLabel = document.getElementById('muteLabel');
+    const resetGameBtn = document.getElementById('resetGameBtn');
+    const statusBannerText = document.getElementById('statusBannerText');
+
+    // Fullscreen Celebration Video & Cinematic Wish Takeover
+    const celebrationScreen = document.getElementById('celebrationScreen');
+    const celebrationVideo = document.getElementById('celebrationVideo');
+    const startAgainBtn = document.getElementById('startAgainBtn');
+
+    function openCelebrationModal() {
+      if (!celebrationScreen) return;
+      celebrationScreen.classList.remove('opacity-0', 'pointer-events-none');
+      celebrationScreen.classList.add('opacity-100', 'pointer-events-auto');
+      if (celebrationVideo) {
+        celebrationVideo.currentTime = 0;
+        celebrationVideo.play().catch(() => {
+          celebrationVideo.muted = true;
+          celebrationVideo.play().catch(() => {});
+        });
+      }
+      for (let i = 0; i < 5; i++) {
+        setTimeout(spawnSkyRocketShell, i * 220);
+      }
+    }
+
+    function closeCelebrationModal() {
+      if (!celebrationScreen) return;
+      celebrationScreen.classList.remove('opacity-100', 'pointer-events-auto');
+      celebrationScreen.classList.add('opacity-0', 'pointer-events-none');
+      if (celebrationVideo) {
+        celebrationVideo.pause();
+      }
+    }
+
+    if (startAgainBtn) {
+      startAgainBtn.addEventListener('click', () => {
+        closeCelebrationModal();
+        resetEffigy();
+      });
+    }
+
+    const speedOptions = [
+      { name: 'Normal', speed: 6.2 },
+      { name: 'Fast', speed: 10.5 },
+      { name: 'Slow', speed: 2.8 },
+      { name: 'Stationary', speed: 0.0 }
+    ];
+    let speedIdx = 0;
+
+    function updateHUD() {
+      hudPower.textContent = `${Math.round(drag.power * 100)}%`;
+      hudAngle.textContent = `${Math.round((drag.pitch * 180) / Math.PI)}°`;
+      const arrowCount = ravanState.stuckArrows ? ravanState.stuckArrows.length : dahanCount;
+      hudScore.textContent = `${arrowCount}`;
+      const firePct = Math.min(100, (ravanState.stuckArrows ? ravanState.stuckArrows.length : 0) * 15 + (ravanState.isBurning ? 50 : 0));
+      if (hudFire) {
+        hudFire.textContent = `${firePct}%`;
+      }
+      if (mobileHudScore) {
+        mobileHudScore.textContent = `${arrowCount}`;
+      }
+      if (mobileHudFire) {
+        mobileHudFire.textContent = `${firePct}%`;
+      }
+    }
+
+    aimModeToggleBtn.addEventListener('click', () => {
+      sound.init();
+      aimMode = aimMode === 'slingshot' ? 'direct' : 'slingshot';
+      aimModeLabel.textContent = aimMode === 'slingshot' ? 'Aim: Slingshot' : 'Aim: Direct';
+      statusBannerText.textContent = aimMode === 'slingshot'
+        ? 'Slingshot Mode: Drag down & opposite to target to pull bow tension!'
+        : 'Direct Aim Mode: Drag toward target to aim and draw arrow!';
+    });
+
+    speedToggleBtn.addEventListener('click', () => {
+      sound.init();
+      speedIdx = (speedIdx + 1) % speedOptions.length;
+      ravanState.vx = speedOptions[speedIdx].speed;
+      speedLabel.textContent = speedOptions[speedIdx].name;
+    });
+
+    muteToggleBtn.addEventListener('click', () => {
+      sound.init();
+      sound.muted = !sound.muted;
+      muteLabel.textContent = sound.muted ? 'Muted' : 'Audio On';
+      audioIcon.innerHTML = sound.muted
+        ? '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>'
+        : '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>';
+    });
+
+    function resetEffigy() {
+      sound.init();
+      ravanState.isBurning = false;
+      ravanState.burnTimer = 0;
+      ravanState.burnLevel = 0;
+      ravanState.collapseAngle = 0;
+      ravanState.collapseSink = 0;
+      ravanState.celebrationShown = false;
+      ravanState.group.position.set(0, 0, ravanState.z);
+      ravanState.group.rotation.set(0, 0, 0);
+
+      // Remove all stuck arrows and their attached roaring flame clusters
+      if (ravanState.stuckArrows) {
+        ravanState.stuckArrows.forEach((stuck) => {
+          if (stuck.mesh) ravanState.group.remove(stuck.mesh);
+          if (stuck.flameCluster && stuck.flameCluster.group) {
+            ravanState.group.remove(stuck.flameCluster.group);
+          }
+        });
+        ravanState.stuckArrows = [];
+      }
+
+      // Restore burning materials
+      ravanState.burningMeshes.forEach((mesh) => {
+        mesh.material.emissive.setHex(0x000000);
+        mesh.material.emissiveIntensity = 0;
+      });
+
+      if (arrowState.mesh) {
+        scene.remove(arrowState.mesh);
+        arrowState.mesh = null;
+      }
+      arrowLight.intensity = 0;
+
+      closeCelebrationModal();
+      document.getElementById('aimHintPill').style.opacity = '1';
+      statusBannerText.textContent = 'New effigy erected! Drag down anywhere to draw the Kodanda bow \u2022 Aim for Ravan\'s glowing Amrit Kund!';
+
+      resetBowToReady();
+      updateHUD();
+    }
+
+    resetGameBtn.addEventListener('click', resetEffigy);
+
+    // =========================================================================
+    // 11. MAIN SIMULATION & ANIMATION LOOP
+    // =========================================================================
+    let lastTime = performance.now();
+    let skyCrackerTimer = 0;
+
+    function animate(time) {
+      requestAnimationFrame(animate);
+
+      const dt = Math.min(0.06, (time - lastTime) / 1000);
+      lastTime = time;
+
+      // 1. Ravan Lateral Movement & Sway
+      const speedMult = ravanState.isBurning ? Math.max(0.12, 1 - ravanState.burnLevel * 0.88) : 1.0;
+      ravanState.group.position.x += ravanState.vx * speedMult * dt;
+      if (ravanState.group.position.x > ravanState.maxOffset) {
+        ravanState.group.position.x = ravanState.maxOffset;
+        ravanState.vx = -Math.abs(ravanState.vx);
+      } else if (ravanState.group.position.x < -ravanState.maxOffset) {
+        ravanState.group.position.x = -ravanState.maxOffset;
+        ravanState.vx = Math.abs(ravanState.vx);
+      }
+
+      // Subtle atmospheric breathing sway of effigy
+      const sway = Math.sin(time * 0.002) * (ravanState.isBurning ? 0.08 : 0.02);
+      ravanState.group.rotation.y = sway;
+
+      // Spin shield chakri crackers
+      if (ravanState.shieldChakri) {
+        ravanState.shieldChakri.rotation.z += (ravanState.isBurning ? 18.0 : 3.5) * dt;
+      }
+
+      // Pulsate glowing Amrit Kund
+      if (ravanState.amritMesh) {
+        const pulse = 1.0 + 0.18 * Math.sin(time * 0.008);
+        ravanState.amritMesh.scale.set(pulse, pulse, pulse);
+      }
+
+      // Subtle idle breathing sway of bow
+      if (arrowState.state === 'READY') {
+        bowRig.position.y = DEFAULT_LOCAL_BOW_POS.y + Math.sin(time * 0.0018) * 0.012;
+      }
+
+      // 2. Flying Arrow Physics & Collision Detection
+      if (arrowState.state === 'FLYING' && arrowState.mesh) {
+        arrowState.vel.y -= GRAVITY_3D * dt;
+        arrowState.pos.addScaledVector(arrowState.vel, dt);
+        arrowState.mesh.position.copy(arrowState.pos);
+        arrowLight.position.copy(arrowState.pos);
+
+        // Orient arrow along its velocity tangent vector
+        const dir = arrowState.vel.clone().normalize();
+        arrowState.mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, -1), dir);
+
+        // Arrow Sparks Trail
+        if (Math.random() < 0.6) {
+          const trailMat = new THREE.MeshBasicMaterial({ color: 0xffaa00 });
+          const tMesh = new THREE.Mesh(sparkGeo, trailMat);
+          tMesh.position.copy(arrowState.pos);
+          tMesh.scale.set(0.6, 0.6, 0.6);
+          scene.add(tMesh);
+          sparkParticles.push({
+            mesh: tMesh,
+            vel: new THREE.Vector3((Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2),
+            life: 0.28
+          });
+        }
+
+        // Check Collision with Ravan Plane (Z = -38)
+        const ravanPos = ravanState.group.position;
+        if (arrowState.pos.z <= ravanPos.z + 1.2 && arrowState.pos.z >= ravanPos.z - 2.2) {
+          const dx = arrowState.pos.x - ravanPos.x;
+          const dy = arrowState.pos.y - ravanPos.y;
+
+          // Ravan collision volume: Width ~ 11 units, Height ~ 14.5 units
+          if (Math.abs(dx) <= 5.8 && dy >= 0.5 && dy <= 14.5) {
+            arrowState.state = 'HIT';
+
+            // Check if Amrit Kund (navel) critical hit
+            const navelDist = Math.hypot(dx - 0, dy - 7.8);
+            const isNavelCritical = navelDist < 1.35;
+
+            spawnHitExplosion(arrowState.pos, isNavelCritical);
+
+            // Convert hit position to Ravan group's local coordinates
+            const localHit = ravanState.group.worldToLocal(arrowState.pos.clone());
+
+            // Create embedded arrow mesh inside Ravan's frame
+            const lodgedArrow = create3DArrowMesh();
+            lodgedArrow.position.copy(localHit);
+
+            // Align lodged arrow with flight trajectory into Ravan
+            const localDir = arrowState.vel.clone().normalize();
+            lodgedArrow.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, -1), localDir);
+            lodgedArrow.translateZ(-0.38); // Embed arrowhead inside effigy
+            ravanState.group.add(lodgedArrow);
+
+            // Attach an actual roaring volumetric flame cluster right at embedded arrow puncture
+            const flameCluster = createStuckFlameCluster(localHit, ravanState.stuckArrows.length);
+            ravanState.group.add(flameCluster.group);
+
+            // Register stuck arrow with impact vibration and active flame cluster
+            ravanState.stuckArrows.push({
+              mesh: lodgedArrow,
+              flameCluster: flameCluster,
+              localPos: localHit.clone(),
+              vibration: 0.45,
+              particleTimer: 0,
+              smokeTimer: 0
+            });
+
+            // Clean up flying arrow
+            scene.remove(arrowState.mesh);
+            arrowState.mesh = null;
+            arrowLight.intensity = 0;
+
+            // Increment hit score
+            dahanCount++;
+            updateHUD();
+
+            const hitCount = ravanState.stuckArrows.length;
+            if (isNavelCritical) {
+              statusBannerText.textContent = 'AMRIT KUND PIERCED! Sacred nectar struck — Victory over Ravana! Happy Dussehra!';
+              ravanState.isBurning = true;
+              sound.playVictoryChime();
+              spawnRavanCrackerBarrage(16);
+              if (!ravanState.celebrationShown) {
+                ravanState.celebrationShown = true;
+                setTimeout(openCelebrationModal, 800);
+              }
+            } else if (hitCount === 1) {
+              statusBannerText.textContent = 'Direct Hit! Arrow 1 embedded — sacred flame igniting on Ravan!';
+              sound.playCrackerPop(1.5);
+            } else if (hitCount === 2) {
+              statusBannerText.textContent = 'Direct Hit! Arrow 2 embedded — dual flames spreading across effigy!';
+              sound.playCrackerPop(1.8);
+            } else if (hitCount === 3) {
+              statusBannerText.textContent = 'TRIUMPH! 3 Arrows embedded — Victory over Ravana! Happy Dussehra!';
+              sound.playCrackerPop(2.0);
+              sound.playVictoryChime();
+              spawnRavanCrackerBarrage(16);
+              if (!ravanState.celebrationShown) {
+                ravanState.celebrationShown = true;
+                setTimeout(openCelebrationModal, 700);
+              }
+            } else if (hitCount >= 6) {
+              statusBannerText.textContent = `Massive Agni barrage (${hitCount} arrows)! Effigy is engulfed in roaring flames!`;
+              ravanState.isBurning = true;
+              sound.playVictoryChime();
+              spawnRavanCrackerBarrage(12);
+            } else {
+              statusBannerText.textContent = `Direct Hit! Arrow ${hitCount} embedded — fire spreading higher!`;
+              sound.playCrackerPop(1.6);
+            }
+
+            // Immediately ready the next arrow so player can keep firing!
+            setTimeout(() => {
+              resetBowToReady();
+              document.getElementById('aimHintPill').style.opacity = '1';
+            }, 220);
+          }
+        }
+
+        // Arrow missed and hit ground or boundary
+        if (arrowState.pos.y <= 0.1 || arrowState.pos.z < -65) {
+          scene.remove(arrowState.mesh);
+          arrowState.mesh = null;
+          arrowLight.intensity = 0;
+          resetBowToReady();
+
+          if (!ravanState.isBurning) {
+            document.getElementById('aimHintPill').style.opacity = '1';
+            statusBannerText.textContent = 'Close shot! Lead your shot to intercept Ravan as he glides across the Maidan!';
+          }
+        }
+      }
+
+      // 3. Ravan Burning & Spectacular Dahan Pyrotechnics
+      if (ravanState.isBurning) {
+        ravanState.burnTimer += dt;
+        ravanState.burnLevel = Math.min(1.0, ravanState.burnTimer / 8.0);
+
+        // Turn materials into glowing embers
+        const emberColor = new THREE.Color(0xff4400);
+        ravanState.burningMeshes.forEach((mesh) => {
+          mesh.material.emissive = emberColor;
+          mesh.material.emissiveIntensity = 0.3 + ravanState.burnLevel * 1.4;
+        });
+
+        // Periodic sky-shot fireworks during burning
+        skyCrackerTimer += dt;
+        if (skyCrackerTimer > 0.85) {
+          skyCrackerTimer = 0;
+          spawnSkyRocketShell();
+        }
+
+        // Structural Collapse after 3.5 seconds of burning
+        if (ravanState.burnTimer > 3.5) {
+          const colProg = Math.min(1.0, (ravanState.burnTimer - 3.5) / 5.5);
+          ravanState.group.rotation.x = -colProg * 0.28;
+          ravanState.group.rotation.z = Math.sin(colProg * Math.PI) * 0.15;
+          ravanState.group.position.y = -colProg * 1.8;
+        }
+      }
+
+      // 3.5. Update Embedded Stuck Arrows (Volumetric Roaring Flames & Rising Smoke)
+      if (ravanState.stuckArrows && ravanState.stuckArrows.length > 0) {
+        ravanState.stuckArrows.forEach((stuck) => {
+          if (stuck.vibration > 0) {
+            stuck.vibration -= dt;
+            stuck.mesh.rotation.z += Math.sin(time * 0.04) * 0.05 * stuck.vibration;
+          }
+
+          // Animate the roaring 3D flame cluster attached to Ravan
+          if (stuck.flameCluster) {
+            const fc = stuck.flameCluster;
+            // Progressive ignition: as more arrows lodge, all flames grow and burn hotter!
+            const growthMult = 1.0 + (ravanState.stuckArrows.length - 1) * 0.16;
+            const f = Math.sin(time * 0.024 + fc.seed) * 0.32 + (Math.random() - 0.5) * 0.22;
+            const f2 = Math.cos(time * 0.032 + fc.seed) * 0.28;
+
+            fc.coreSprite.scale.set((1.5 + f * 0.7) * fc.baseScale * growthMult, (2.4 + f * 1.3) * fc.baseScale * growthMult, 1);
+            fc.mainSprite.scale.set((2.6 + f * 1.0) * fc.baseScale * growthMult, (4.0 + f * 1.9) * fc.baseScale * growthMult, 1);
+            fc.outerSprite.scale.set((3.6 + f2 * 1.3) * fc.baseScale * growthMult, (5.4 + f2 * 2.4) * fc.baseScale * growthMult, 1);
+            fc.mainSprite.material.rotation = Math.sin(time * 0.015 + fc.seed) * 0.14;
+            fc.outerSprite.material.rotation = -Math.cos(time * 0.018 + fc.seed) * 0.16;
+
+            // Pulsating fiery light casting bright orange glow
+            fc.fireLight.intensity = (4.8 + Math.sin(time * 0.03 + fc.seed) * 1.4 + Math.random() * 0.8) * growthMult;
+
+            // Continuous rising flame tongue particles
+            fc.particleTimer += dt;
+            if (fc.particleTimer > 0.038) {
+              fc.particleTimer = 0;
+              const worldPuncture = stuck.localPos.clone().applyMatrix4(ravanState.group.matrixWorld);
+
+              const pColors = [0xffffff, 0xffd000, 0xff7700, 0xff2200];
+              const pMat = new THREE.SpriteMaterial({
+                map: fireTextures.flameTex,
+                blending: THREE.AdditiveBlending,
+                color: pColors[Math.floor(Math.random() * pColors.length)],
+                transparent: true,
+                opacity: 0.92,
+                depthWrite: false
+              });
+              const pSprite = new THREE.Sprite(pMat);
+              pSprite.position.copy(worldPuncture);
+              pSprite.position.y += 0.4 + Math.random() * 1.0;
+              pSprite.position.x += (Math.random() - 0.5) * 0.8;
+              const pScale = (1.4 + Math.random() * 1.6) * growthMult;
+              pSprite.scale.set(pScale, pScale * 1.5, 1);
+              scene.add(pSprite);
+
+              sparkParticles.push({
+                mesh: pSprite,
+                vel: new THREE.Vector3(
+                  (Math.random() - 0.5) * 1.8,
+                  Math.random() * 4.4 + 2.8,
+                  (Math.random() - 0.5) * 1.2
+                ),
+                growth: 1.6,
+                life: 0.45 + Math.random() * 0.35,
+                maxLife: 0.8
+              });
+
+              // Flying golden embers
+              if (Math.random() < 0.65) {
+                const eMat = new THREE.SpriteMaterial({
+                  map: fireTextures.emberTex,
+                  blending: THREE.AdditiveBlending,
+                  color: 0xffb703,
+                  transparent: true,
+                  opacity: 1.0,
+                  depthWrite: false
+                });
+                const eSprite = new THREE.Sprite(eMat);
+                eSprite.position.copy(worldPuncture);
+                eSprite.position.y += 0.8;
+                eSprite.scale.set(0.45, 0.45, 1);
+                scene.add(eSprite);
+
+                sparkParticles.push({
+                  mesh: eSprite,
+                  vel: new THREE.Vector3(
+                    (Math.random() - 0.5) * 3.6,
+                    Math.random() * 6.5 + 3.2,
+                    (Math.random() - 0.5) * 2.6
+                  ),
+                  growth: -0.2,
+                  life: 0.75 + Math.random() * 0.6,
+                  maxLife: 1.35
+                });
+              }
+            }
+
+            // Continuous rising dark smoke billow particles
+            fc.smokeTimer += dt;
+            if (fc.smokeTimer > 0.075) {
+              fc.smokeTimer = 0;
+              const worldPuncture = stuck.localPos.clone().applyMatrix4(ravanState.group.matrixWorld);
+
+              const sMat = new THREE.SpriteMaterial({
+                map: fireTextures.smokeTex,
+                transparent: true,
+                opacity: 0.48,
+                depthWrite: false
+              });
+              const sSprite = new THREE.Sprite(sMat);
+              sSprite.position.copy(worldPuncture);
+              sSprite.position.y += 2.2 + Math.random() * 1.4;
+              sSprite.position.x += (Math.random() - 0.5) * 1.2;
+              const sScale = 2.4 + Math.random() * 1.4;
+              sSprite.scale.set(sScale, sScale, 1);
+              scene.add(sSprite);
+
+              sparkParticles.push({
+                mesh: sSprite,
+                vel: new THREE.Vector3(
+                  (Math.random() - 0.5) * 1.5,
+                  Math.random() * 2.6 + 1.8,
+                  (Math.random() - 0.5) * 1.2
+                ),
+                growth: 3.2,
+                life: 1.5 + Math.random() * 0.8,
+                maxLife: 2.3
+              });
+            }
+          }
+        });
+      }
+
+      // 4. Update Particle Physics
+      for (let i = sparkParticles.length - 1; i >= 0; i--) {
+        const p = sparkParticles[i];
+        p.vel.y -= GRAVITY_3D * dt * 0.25; // Smoke and fire drift upward against gravity
+        p.mesh.position.addScaledVector(p.vel, dt);
+        p.life -= dt;
+
+        if (p.growth) {
+          p.mesh.scale.x += p.growth * dt;
+          p.mesh.scale.y += p.growth * dt;
+        }
+
+        if (p.maxLife && p.mesh.material) {
+          p.mesh.material.opacity = Math.max(0, p.life / p.maxLife);
+        }
+
+        if (p.life <= 0 || p.mesh.position.y <= 0.05) {
+          scene.remove(p.mesh);
+          sparkParticles.splice(i, 1);
+        }
+      }
+
+      for (let i = skyFireworks.length - 1; i >= 0; i--) {
+        const p = skyFireworks[i];
+        p.vel.y -= GRAVITY_3D * dt * 0.35;
+        p.mesh.position.addScaledVector(p.vel, dt);
+        p.life -= dt;
+        if (p.life <= 0) {
+          scene.remove(p.mesh);
+          skyFireworks.splice(i, 1);
+        }
+      }
+
+      for (let i = crackerFlashes.length - 1; i >= 0; i--) {
+        const f = crackerFlashes[i];
+        f.life -= dt;
+        f.light.intensity *= Math.max(0, f.life / 0.35);
+        if (f.life <= 0) {
+          scene.remove(f.light);
+          crackerFlashes.splice(i, 1);
+        }
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    window.addEventListener('resize', updateResponsiveCamera);
+
+    updateHUD();
+    requestAnimationFrame(animate);
+
+    if (window.location.hash === '#testFire') {
+      setTimeout(() => {
+        const local1 = new THREE.Vector3(-0.6, 8.5, 0.8);
+        const arrow1 = create3DArrowMesh();
+        arrow1.position.copy(local1);
+        arrow1.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, -1), new THREE.Vector3(0, 0.1, -1).normalize());
+        arrow1.translateZ(-0.38);
+        ravanState.group.add(arrow1);
+        const fc1 = createStuckFlameCluster(local1, 0);
+        ravanState.group.add(fc1.group);
+        ravanState.stuckArrows.push({ mesh: arrow1, flameCluster: fc1, localPos: local1, vibration: 0, particleTimer: 0, smokeTimer: 0 });
+
+        const local2 = new THREE.Vector3(0.9, 9.6, 0.7);
+        const arrow2 = create3DArrowMesh();
+        arrow2.position.copy(local2);
+        arrow2.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, -1), new THREE.Vector3(-0.1, 0.1, -1).normalize());
+        arrow2.translateZ(-0.38);
+        ravanState.group.add(arrow2);
+        const fc2 = createStuckFlameCluster(local2, 1);
+        ravanState.group.add(fc2.group);
+        ravanState.stuckArrows.push({ mesh: arrow2, flameCluster: fc2, localPos: local2, vibration: 0, particleTimer: 0, smokeTimer: 0 });
+
+        dahanCount = 2;
+        updateHUD();
+      }, 350);
+    }
+
+    if (window.location.hash === '#testCelebration') {
+      setTimeout(() => {
+        dahanCount = 3;
+        updateHUD();
+        openCelebrationModal();
+      }, 350);
+    }
+  </script>
+</body>
+</html>
