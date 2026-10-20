@@ -9,7 +9,8 @@ Experience the victory of light over darkness. Draw Lord Rama's celestial Kodand
 ## Live Demo
 
 Play directly in your browser without any installation:
-- **Live Game**: [https://creative-ui-two.vercel.app/dussehra-ravan-dahan.html](https://creative-ui-two.vercel.app/dussehra-ravan-dahan.html)
+- **GitHub Pages**: [https://gauravsaxena1997.github.io/ravan-dahan-3d/](https://gauravsaxena1997.github.io/ravan-dahan-3d/)
+- **Vercel Mirror**: [https://creative-ui-two.vercel.app/dussehra-ravan-dahan.html](https://creative-ui-two.vercel.app/dussehra-ravan-dahan.html)
 
 ---
 
